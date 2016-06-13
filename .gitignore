@@ -1,6 +1,9 @@
 /.gradle/
 /.idea/libraries/
 /.idea/copyright/
+/.idea/inspectionProfiles/
 /.idea/modules/
+/.idea/shelf/
+/.idea/uiDesigner.xml
 /.idea/workspace.xml
 /build/
