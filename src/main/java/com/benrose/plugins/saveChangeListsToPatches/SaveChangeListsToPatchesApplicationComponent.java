@@ -39,18 +39,23 @@ public class SaveChangeListsToPatchesApplicationComponent
         this.project = project;
     }
 
+    @Override
     public void projectOpened() {}
 
+    @Override
     public void projectClosed() {
         if (saveOnClose) {
             savePatches();
         }
     }
 
+    @Override
     public void initComponent() {}
 
+    @Override
     public void disposeComponent() {}
 
+    @Override
     @NotNull
     public String getComponentName() {
         return "SaveChangeListsToPatchesApplicationComponent";
@@ -72,14 +77,17 @@ public class SaveChangeListsToPatchesApplicationComponent
         this.saveOnClose = saveOnClose;
     }
 
+    @Override
     public String getDisplayName() {
         return "Save Changelists to Patches - Plugin";
     }
 
+    @Override
     public String getHelpTopic() {
         return null;
     }
 
+    @Override
     public JComponent createComponent() {
         if (form == null) {
             form = new SaveChangeListsToPatchesConfiguration();
@@ -87,10 +95,12 @@ public class SaveChangeListsToPatchesApplicationComponent
         return form.getRootComponent();
     }
 
+    @Override
     public boolean isModified() {
         return form != null && form.isModified(this);
     }
 
+    @Override
     public void apply() throws ConfigurationException {
         if (form != null) {
             if (new File(form.getSaveLocation()).canWrite()) {
@@ -101,6 +111,7 @@ public class SaveChangeListsToPatchesApplicationComponent
         }
     }
 
+    @Override
     public void reset() {
         if (form == null) {
             return;
@@ -109,15 +120,18 @@ public class SaveChangeListsToPatchesApplicationComponent
         form.setData(this);
     }
 
+    @Override
     public void disposeUIResources() {
         form.closeDownForm();
         form = null;
     }
 
+    @Override
     public void readExternal(Element Element) throws InvalidDataException {
         DefaultJDOMExternalizer.readExternal(this, Element);
     }
 
+    @Override
     public void writeExternal(Element Element) throws WriteExternalException {
         DefaultJDOMExternalizer.writeExternal(this, Element);
     }

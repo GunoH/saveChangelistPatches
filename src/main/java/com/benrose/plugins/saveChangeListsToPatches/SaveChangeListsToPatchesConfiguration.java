@@ -22,6 +22,7 @@ class SaveChangeListsToPatchesConfiguration implements java.awt.event.ActionList
         directoryButton.removeActionListener(this);
     }
 
+    @Override
     public void actionPerformed(ActionEvent actionEvent) {
         String currentFileLocation = saveLocationField.getText();
         javax.swing.JFileChooser folderChooser = new javax.swing.JFileChooser(currentFileLocation);
