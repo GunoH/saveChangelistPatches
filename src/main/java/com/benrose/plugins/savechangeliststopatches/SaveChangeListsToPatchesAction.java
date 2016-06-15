@@ -1,4 +1,4 @@
-package com.benrose.plugins.saveChangeListsToPatches;
+package com.benrose.plugins.savechangeliststopatches;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;

@@ -14,7 +14,7 @@
     <!-- Add your project components here -->
     <component>
       <implementation-class>
-        com.benrose.plugins.saveChangeListsToPatches.SaveChangeListsToPatchesApplicationComponent
+          com.benrose.plugins.savechangeliststopatches.SaveChangeListsToPatchesApplicationComponent
       </implementation-class>
       <option name="workspace" value="true" />
     </component>
@@ -23,7 +23,7 @@
   <actions>
     <!-- Add your actions here -->
     <action id="SaveChangeListsToPatches"
-            class="com.benrose.plugins.saveChangeListsToPatches.SaveChangeListsToPatchesAction"
+            class="com.benrose.plugins.savechangeliststopatches.SaveChangeListsToPatchesAction"
             text="Save Changelists As Patches" description="Save change lists to patches">
       <add-to-group group-id="VcsGroups" anchor="first"/>
     </action>

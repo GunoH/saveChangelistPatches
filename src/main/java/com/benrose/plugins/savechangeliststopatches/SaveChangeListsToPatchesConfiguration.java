@@ -1,4 +1,4 @@
-package com.benrose.plugins.saveChangeListsToPatches;
+package com.benrose.plugins.savechangeliststopatches;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

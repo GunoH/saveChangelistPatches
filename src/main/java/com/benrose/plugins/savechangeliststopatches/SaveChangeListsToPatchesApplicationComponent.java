@@ -1,4 +1,4 @@
-package com.benrose.plugins.saveChangeListsToPatches;
+package com.benrose.plugins.savechangeliststopatches;
 
 import java.io.File;
 import java.io.FileNotFoundException;
