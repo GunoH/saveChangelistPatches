@@ -41,13 +41,16 @@ public class SettingsPanel {
 
     void apply() {
         final String saveLocation = saveLocationField.getText().trim();
-        if (new File(saveLocation).canWrite()) {
-            mySettings.setSaveLocation(saveLocation);
-            mySettings.setSaveOnClose(saveOnCloseField.isSelected());
-        } else {
+
+        File file = new File(saveLocation);
+        if (!file.isDirectory() || !file.canWrite()) {
             Messages.showMessageDialog(MessageResources.message("configuration.folderChooser.error.invalidDirectory.text"),
                     MessageResources.message("configuration.folderChooser.error.invalidDirectory.title"), null);
+            return;
         }
+
+        mySettings.setSaveLocation(saveLocation);
+        mySettings.setSaveOnClose(saveOnCloseField.isSelected());
 
     }
 
