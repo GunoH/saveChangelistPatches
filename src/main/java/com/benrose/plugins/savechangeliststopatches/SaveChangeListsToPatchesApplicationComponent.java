@@ -66,6 +66,11 @@ public class SaveChangeListsToPatchesApplicationComponent implements ProjectComp
 
         for (LocalChangeList localChangeList : localChangeLists) {
 
+            if (localChangeList.getChanges().isEmpty()) {
+                // Don't create patches for empty change lists.
+                continue;
+            }
+
             Collection<FilePatch> patches;
             try {
                 patches = IdeaTextPatchBuilder.buildPatch(project, localChangeList.getChanges(), project.getBaseDir().getPath(), false);
