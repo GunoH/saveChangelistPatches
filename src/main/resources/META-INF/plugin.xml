@@ -1,37 +1,39 @@
 <idea-plugin version="2">
-  <name>Save ChangeList Patches</name>
-  <description>Saves each changelist as a patch in the location set in configuration.</description>
-  <version>1.2.3</version>
-  <vendor>requiredfieldforsomereason</vendor>
+    <name>Save ChangeList Patches</name>
+    <description>Saves each changelist as a patch in the location set in configuration.</description>
+    <version>1.2.3</version>
+    <vendor>requiredfieldforsomereason</vendor>
 
     <extensions defaultExtensionNs="com.intellij">
         <projectService serviceInterface="nl.guno.intellij.savechangelisttopatches.settings.Settings"
-                            serviceImplementation="nl.guno.intellij.savechangelisttopatches.settings.Settings"/>
+                        serviceImplementation="nl.guno.intellij.savechangelisttopatches.settings.Settings"/>
         <projectConfigurable groupId="tools" key="configuration.key" bundle="nl.guno.intellij.savechangelisttopatches.MessageResources"
                              instance="nl.guno.intellij.savechangelisttopatches.settings.SettingsManager"
                              id="nl.guno.intellij.savechangelisttopatches.settings.SettingsManager"/>
+        <search.optionContributor
+                implementation="nl.guno.intellij.savechangelisttopatches.settings.SearchableOptionContributor"/>
     </extensions>
 
-  <project-components>
-    <!-- Add your project components here -->
-    <component>
-      <implementation-class>
-          com.benrose.plugins.savechangeliststopatches.SaveChangeListsToPatchesApplicationComponent
-      </implementation-class>
-      <option name="workspace" value="true" />
-    </component>
-  </project-components>
+    <project-components>
+        <!-- Add your project components here -->
+        <component>
+            <implementation-class>
+                com.benrose.plugins.savechangeliststopatches.SaveChangeListsToPatchesApplicationComponent
+            </implementation-class>
+            <option name="workspace" value="true" />
+        </component>
+    </project-components>
 
-  <actions>
-    <!-- Add your actions here -->
-    <action id="SaveChangeListsToPatches"
-            class="com.benrose.plugins.savechangeliststopatches.SaveChangeListsToPatchesAction"
-            text="Save Changelists As Patches" description="Save change lists to patches">
-      <add-to-group group-id="VcsGroups" anchor="first"/>
-    </action>
-  </actions>
+    <actions>
+        <!-- Add your actions here -->
+        <action id="SaveChangeListsToPatches"
+                class="com.benrose.plugins.savechangeliststopatches.SaveChangeListsToPatchesAction"
+                text="Save Changelists As Patches" description="Save change lists to patches">
+            <add-to-group group-id="VcsGroups" anchor="first"/>
+        </action>
+    </actions>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
-  </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
 </idea-plugin>
