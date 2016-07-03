@@ -1,4 +1,4 @@
-package com.benrose.plugins.savechangeliststopatches;
+package nl.guno.intellij.savechangelisttopatches;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,7 +17,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
-import nl.guno.intellij.savechangelisttopatches.MessageResources;
 import nl.guno.intellij.savechangelisttopatches.settings.Settings;
 
 public class SaveChangeListsToPatchesApplicationComponent implements ProjectComponent {
