@@ -26,6 +26,7 @@ import com.intellij.openapi.util.JDOMExternalizable;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
+import nl.guno.intellij.savechangelisttopatches.MessageResources;
 
 public class SaveChangeListsToPatchesApplicationComponent
         implements ProjectComponent, Configurable, JDOMExternalizable {
@@ -79,7 +80,7 @@ public class SaveChangeListsToPatchesApplicationComponent
 
     @Override
     public String getDisplayName() {
-        return "Save Changelists to Patches - Plugin";
+        return MessageResources.message("component.displayName");
     }
 
     @Override
@@ -106,7 +107,7 @@ public class SaveChangeListsToPatchesApplicationComponent
             if (new File(form.getSaveLocation()).canWrite()) {
                 form.getData(this);
             } else {
-                Messages.showMessageDialog("Invalid directory.  Changes will not be saved.", "Message", null);
+                Messages.showMessageDialog(MessageResources.message("dialog.invalidDirectory.text"), MessageResources.message("dialog.invalidDirectory.title"), null);
             }
         }
     }
@@ -139,7 +140,9 @@ public class SaveChangeListsToPatchesApplicationComponent
     void savePatches() {
         String FilePath = getSaveLocationField();
         if ((FilePath == null) || (FilePath.length() < 1)) {
-            Messages.showMessageDialog("Save path has not been set.\nPlease set this in the plugin configuration under project settings.", "Save Location Not Set", null);
+            Messages.showMessageDialog(
+                    MessageResources.message("dialog.saveLocation.notSet.text"),
+                    MessageResources.message("dialog.saveLocation.notSet.title"), null);
             return;
         }
         if (FilePath.charAt(FilePath.length() - 1) != '/') {
@@ -154,7 +157,7 @@ public class SaveChangeListsToPatchesApplicationComponent
             try {
                 patches = IdeaTextPatchBuilder.buildPatch(project, localChangeList.getChanges(), project.getBaseDir().getPath(), false);
             } catch (Exception ex) {
-                System.out.println("Error: " + ex.getMessage());
+                ex.printStackTrace(System.out);
                 patches = null;
             }
 
@@ -164,9 +167,12 @@ public class SaveChangeListsToPatchesApplicationComponent
                     UnifiedDiffWriter.write(project, patches, writer, "\n", null);
                     writer.flush();
                 } catch (FileNotFoundException ex) {
-                    Messages.showMessageDialog("Invalid File name: " + localChangeList.getName() + ".patch\nThis File was not saved.", "Invalid File Name", null);
+                    Messages.showMessageDialog(
+                            MessageResources.message("dialog.invalidFileName.text", localChangeList.getName()),
+                            MessageResources.message("dialog.invalidFileName.title"),
+                            null);
                 } catch (IOException ex) {
-                    Messages.showMessageDialog(ex.toString(), "Exception Message", null);
+                    Messages.showMessageDialog(ex.toString(), MessageResources.message("dialog.exception.title"), null);
                 }
             }
         }

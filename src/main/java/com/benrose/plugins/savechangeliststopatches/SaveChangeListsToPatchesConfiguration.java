@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import nl.guno.intellij.savechangelisttopatches.MessageResources;
 
 import javax.swing.*;
 
@@ -29,7 +30,7 @@ class SaveChangeListsToPatchesConfiguration implements ActionListener {
         String currentFileLocation = saveLocationField.getText();
         JFileChooser folderChooser = new JFileChooser(currentFileLocation);
         folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int returnVal = folderChooser.showDialog(rootComponent, "Select Directory");
+        int returnVal = folderChooser.showDialog(rootComponent, MessageResources.message("configuration.folderChooser.approveButton.text"));
         if ((returnVal == 0) && (new java.io.File(folderChooser.getSelectedFile().getPath()).canWrite()))
             saveLocationField.setText(folderChooser.getSelectedFile().getPath());
     }
@@ -62,26 +63,26 @@ class SaveChangeListsToPatchesConfiguration implements ActionListener {
         JPanel.setLayout(new FormLayout("fill:d:grow,left:4dlu:noGrow,fill:d:grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow", "center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow"));
         JTextField JTextField = new JTextField();
         saveLocationField = JTextField;
-        JTextField.setToolTipText("This is where the patches will be saved.");
+        JTextField.setToolTipText(MessageResources.message("configuration.saveLocation.tooltipText"));
 
         JPanel.add(JTextField, new CellConstraints(3, 1, 1, 1, CellConstraints.FILL, CellConstraints.DEFAULT, new Insets(0, 0, 0, 0)));
         JLabel JLabel = new JLabel();
-        JLabel.setText("Save Location");
+        JLabel.setText(MessageResources.message("configuration.saveLocation.label"));
         JPanel.add(JLabel, new CellConstraints(7, 1, 1, 1, CellConstraints.DEFAULT, CellConstraints.DEFAULT, new Insets(0, 0, 0, 0)));
         JLabel JLabel1 = new JLabel();
-        JLabel1.setText("Save on close");
+        JLabel1.setText(MessageResources.message("configuration.saveOnClose.label"));
         JPanel.add(JLabel1, new CellConstraints(7, 3, 1, 1, CellConstraints.DEFAULT, CellConstraints.DEFAULT, new Insets(0, 0, 0, 0)));
         JButton JButton = new JButton();
         directoryButton = JButton;
         JButton.setHorizontalAlignment(SwingConstants.LEFT);
         JButton.setEnabled(true);
         JButton.setHideActionText(false);
-        JButton.setText("...");
+        JButton.setText(MessageResources.message("configuration.folderChooser.label"));
         JPanel.add(JButton, new CellConstraints(5, 1, 1, 1, CellConstraints.LEFT, CellConstraints.DEFAULT, new Insets(0, 0, 0, 0)));
         JCheckBox JCheckBox = new JCheckBox();
         saveOnClose = JCheckBox;
         JCheckBox.setEnabled(true);
-        JCheckBox.setToolTipText("Select this option to save patches when closing IntelliJ.");
+        JCheckBox.setToolTipText(MessageResources.message("configuration.saveOnClose.tooltipText"));
         JCheckBox.setText("");
         JCheckBox.setHorizontalAlignment(SwingConstants.LEFT);
         JPanel.add(JCheckBox, new CellConstraints(5, 3, 1, 1, CellConstraints.DEFAULT, CellConstraints.DEFAULT, new Insets(0, 0, 0, 0)));
