@@ -2,12 +2,14 @@ package com.benrose.plugins.savechangeliststopatches;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 
-class SaveChangeListsToPatchesConfiguration implements java.awt.event.ActionListener {
+class SaveChangeListsToPatchesConfiguration implements ActionListener {
     private JPanel rootComponent;
     private JTextField saveLocationField;
     private JCheckBox saveOnClose;
@@ -25,7 +27,7 @@ class SaveChangeListsToPatchesConfiguration implements java.awt.event.ActionList
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         String currentFileLocation = saveLocationField.getText();
-        javax.swing.JFileChooser folderChooser = new javax.swing.JFileChooser(currentFileLocation);
+        JFileChooser folderChooser = new JFileChooser(currentFileLocation);
         folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = folderChooser.showDialog(rootComponent, "Select Directory");
         if ((returnVal == 0) && (new java.io.File(folderChooser.getSelectedFile().getPath()).canWrite()))
@@ -57,7 +59,7 @@ class SaveChangeListsToPatchesConfiguration implements java.awt.event.ActionList
     private void setupUI() {
         JPanel JPanel = new JPanel();
         rootComponent = JPanel;
-        JPanel.setLayout(new com.jgoodies.forms.layout.FormLayout("fill:d:grow,left:4dlu:noGrow,fill:d:grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow", "center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow"));
+        JPanel.setLayout(new FormLayout("fill:d:grow,left:4dlu:noGrow,fill:d:grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow", "center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow"));
         JTextField JTextField = new JTextField();
         saveLocationField = JTextField;
         JTextField.setToolTipText("This is where the patches will be saved.");
