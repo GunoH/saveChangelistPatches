@@ -37,8 +37,4 @@
             <add-to-group group-id="VcsGroups" anchor="first"/>
         </action>
     </actions>
-
-    <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
-    </extensions>
 </idea-plugin>
