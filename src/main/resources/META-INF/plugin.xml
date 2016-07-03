@@ -5,7 +5,7 @@
   <vendor>requiredfieldforsomereason</vendor>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceInterface="nl.guno.intellij.savechangelisttopatches.settings.Settings"
+        <projectService serviceInterface="nl.guno.intellij.savechangelisttopatches.settings.Settings"
                             serviceImplementation="nl.guno.intellij.savechangelisttopatches.settings.Settings"/>
         <projectConfigurable groupId="tools" key="configuration.key" bundle="nl.guno.intellij.savechangelisttopatches.MessageResources"
                              instance="nl.guno.intellij.savechangelisttopatches.settings.SettingsManager"

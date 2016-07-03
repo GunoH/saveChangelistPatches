@@ -16,8 +16,8 @@ public class SettingsPanel {
     private JCheckBox saveOnCloseField;
     private JButton directoryButton;
 
-    SettingsPanel() {
-        mySettings = Settings.getInstance();
+    SettingsPanel(Settings settings) {
+        mySettings = settings;
         reset();
         directoryButton.addActionListener(e -> {
             String currentFileLocation = saveLocationField.getText();

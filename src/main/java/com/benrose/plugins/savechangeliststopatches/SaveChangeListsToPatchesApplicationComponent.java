@@ -33,7 +33,7 @@ public class SaveChangeListsToPatchesApplicationComponent implements ProjectComp
 
     @Override
     public void projectClosed() {
-        if (Settings.getInstance().getSaveOnClose()) {
+        if (Settings.getInstance(project).getSaveOnClose()) {
             savePatches();
         }
     }
@@ -51,7 +51,7 @@ public class SaveChangeListsToPatchesApplicationComponent implements ProjectComp
     }
 
     void savePatches() {
-        String FilePath = Settings.getInstance().getSaveLocation();
+        String FilePath = Settings.getInstance(project).getSaveLocation();
         if ((FilePath == null) || (FilePath.length() < 1)) {
             Messages.showMessageDialog(
                     MessageResources.message("dialog.saveLocation.notSet.text"),

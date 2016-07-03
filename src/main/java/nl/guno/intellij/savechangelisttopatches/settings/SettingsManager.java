@@ -8,10 +8,16 @@ import org.jetbrains.annotations.Nullable;
 
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
+import com.intellij.openapi.project.Project;
 import nl.guno.intellij.savechangelisttopatches.MessageResources;
 
 public class SettingsManager implements SearchableConfigurable {
+    private final Project myProject;
     private SettingsPanel mySettingsPane;
+
+    public SettingsManager(Project project) {
+        myProject = project;
+    }
 
     @Nls
     @Override
@@ -41,7 +47,7 @@ public class SettingsManager implements SearchableConfigurable {
     @Override
     public JComponent createComponent() {
         if (mySettingsPane == null) {
-            mySettingsPane = new SettingsPanel();
+            mySettingsPane = new SettingsPanel(Settings.getInstance(myProject));
         }
         return mySettingsPane.getPanel();
     }

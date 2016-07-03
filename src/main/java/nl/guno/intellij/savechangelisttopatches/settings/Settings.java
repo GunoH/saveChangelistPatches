@@ -1,11 +1,9 @@
 package nl.guno.intellij.savechangelisttopatches.settings;
 
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.components.*;
+import com.intellij.openapi.project.Project;
 
-@State(name = "SaveChangeListPatchesSettings", storages = @Storage("saveChangeListPatchesSettings.xml"))
+@State(name = "SaveChangeListPatchesSettings", defaultStateAsResource = true)
 public class Settings implements PersistentStateComponent<Settings.State> {
     
     private State myState = new State();
@@ -31,8 +29,8 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         public boolean saveOnClose;
     }
 
-    public static Settings getInstance() {
-        return ServiceManager.getService(Settings.class);
+    public static Settings getInstance(Project project) {
+        return ServiceManager.getService(project, Settings.class);
     }
 
     public String getSaveLocation() {
