@@ -20,14 +20,15 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         myState = state;
     }
 
-    static class State {
+    @SuppressWarnings("WeakerAccess")
+    public static class State {
         State() {
             saveLocation = "";
             saveOnClose = false;
         }
 
-        String saveLocation;
-        boolean saveOnClose;
+        public String saveLocation;
+        public boolean saveOnClose;
     }
 
     public static Settings getInstance() {
