@@ -4,10 +4,13 @@
   <version>1.2.3</version>
   <vendor>requiredfieldforsomereason</vendor>
 
-  <application-components>
-    <!-- Add your application components here -->
-
-  </application-components>
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceInterface="nl.guno.intellij.savechangelisttopatches.settings.Settings"
+                            serviceImplementation="nl.guno.intellij.savechangelisttopatches.settings.Settings"/>
+        <projectConfigurable groupId="tools" key="configuration.key" bundle="nl.guno.intellij.savechangelisttopatches.MessageResources"
+                             instance="nl.guno.intellij.savechangelisttopatches.settings.SettingsManager"
+                             id="nl.guno.intellij.savechangelisttopatches.settings.SettingsManager"/>
+    </extensions>
 
   <project-components>
     <!-- Add your project components here -->
