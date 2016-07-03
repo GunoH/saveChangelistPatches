@@ -3,7 +3,6 @@
   <description>Saves each changelist as a patch in the location set in configuration.</description>
   <version>1.2.3</version>
   <vendor>requiredfieldforsomereason</vendor>
-  <idea-version since-build="IU-111.69"/>
 
   <application-components>
     <!-- Add your application components here -->
