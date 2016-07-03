@@ -47,7 +47,7 @@ public class SettingsManager implements SearchableConfigurable {
     @Override
     public JComponent createComponent() {
         if (mySettingsPane == null) {
-            mySettingsPane = new SettingsPanel(Settings.getInstance(myProject));
+            mySettingsPane = new SettingsPanel(myProject);
         }
         return mySettingsPane.getPanel();
     }
