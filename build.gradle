@@ -21,6 +21,7 @@ compileJava {
 intellij {
     version ideaVersion
     pluginName 'Save ChangeList Patches'
+    updateSinceUntilBuild false
 }
 
 group 'nl.guno'

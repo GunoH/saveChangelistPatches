@@ -1,9 +1,16 @@
 <idea-plugin version="2">
     <name>Save ChangeList Patches</name>
     <description>Saves each changelist as a patch in the location set in configuration.</description>
-    <version>1.2.3</version>
-    <vendor>requiredfieldforsomereason</vendor>
-
+    <version>2.0-beta</version>
+    <vendor>Guno Heitman</vendor>
+    <idea-version since-build="141"/>
+    <change-notes><![CDATA[
+        <ul>
+            <li>v2.0: IntelliJ 2016.x compatibility.</li>
+        </ul>
+    ]]>
+    </change-notes>
+    
     <extensions defaultExtensionNs="com.intellij">
         <projectService serviceInterface="nl.guno.intellij.savechangelisttopatches.settings.Settings"
                         serviceImplementation="nl.guno.intellij.savechangelisttopatches.settings.Settings"/>
@@ -15,7 +22,6 @@
     </extensions>
 
     <project-components>
-        <!-- Add your project components here -->
         <component>
             <implementation-class>
                 com.benrose.plugins.savechangeliststopatches.SaveChangeListsToPatchesApplicationComponent
@@ -25,7 +31,6 @@
     </project-components>
 
     <actions>
-        <!-- Add your actions here -->
         <action id="SaveChangeListsToPatches"
                 class="com.benrose.plugins.savechangeliststopatches.SaveChangeListsToPatchesAction"
                 text="Save Changelists As Patches" description="Save change lists to patches">
