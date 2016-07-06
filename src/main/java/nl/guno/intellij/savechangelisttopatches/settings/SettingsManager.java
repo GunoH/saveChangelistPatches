@@ -22,7 +22,7 @@ public class SettingsManager implements SearchableConfigurable {
     @Nls
     @Override
     public String getDisplayName() {
-        return MessageResources.message("settingsmanager.displayName");
+        return MessageResources.message("settingsManager.displayName");
     }
 
     @Nullable
