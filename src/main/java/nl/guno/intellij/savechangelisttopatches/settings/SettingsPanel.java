@@ -1,5 +1,7 @@
 package nl.guno.intellij.savechangelisttopatches.settings;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 
 import javax.swing.*;
@@ -23,6 +25,7 @@ public class SettingsPanel {
     private JTextField saveLocationField;
     private JCheckBox saveOnCloseField;
     private JButton directoryButton;
+    private JLabel saveOnCloseLabel;
 
     SettingsPanel(Project project) {
         mySettings = Settings.getInstance(project);
@@ -39,6 +42,13 @@ public class SettingsPanel {
                     saveLocationField.setText(FileUtil.toSystemDependentName(file.getPath()));
                 }
             });
+        });
+        
+        saveOnCloseLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                saveOnCloseField.doClick();
+            }
         });
     }
 
