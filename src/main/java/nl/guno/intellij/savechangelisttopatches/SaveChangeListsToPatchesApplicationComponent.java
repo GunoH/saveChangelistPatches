@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -50,19 +51,21 @@ public class SaveChangeListsToPatchesApplicationComponent implements ProjectComp
     }
 
     void savePatches() {
-        String FilePath = Settings.getInstance(project).getSaveLocation();
-        if ((FilePath == null) || (FilePath.length() < 1)) {
+        String saveLocation = Settings.getInstance(project).getSaveLocation();
+        if ((saveLocation == null) || (saveLocation.length() < 1)) {
             Messages.showMessageDialog(
                     MessageResources.message("dialog.saveLocation.notSet.text"),
                     MessageResources.message("dialog.saveLocation.notSet.title"), null);
             return;
         }
-        if (FilePath.charAt(FilePath.length() - 1) != '/') {
-            FilePath = FilePath + "/";
+        if (saveLocation.charAt(saveLocation.length() - 1) != '/') {
+            saveLocation = saveLocation + "/";
         }
         ChangeListManager changeListManager = ChangeListManager.getInstance(project);
         List<LocalChangeList> localChangeLists = changeListManager.getChangeLists();
 
+        Collection<String> failed = new HashSet<>();
+        
         for (LocalChangeList localChangeList : localChangeLists) {
 
             if (localChangeList.getChanges().isEmpty()) {
@@ -79,19 +82,29 @@ public class SaveChangeListsToPatchesApplicationComponent implements ProjectComp
             }
 
             if (patches != null) {
-                File patchFile = new File(FilePath + localChangeList.getName() + ".patch");
+                File patchFile = new File(saveLocation + localChangeList.getName() + ".patch");
                 try (FileWriter writer = new FileWriter(patchFile.getPath())) {
                     UnifiedDiffWriter.write(project, patches, writer, "\n", null);
                     writer.flush();
                 } catch (FileNotFoundException ex) {
-                    Messages.showMessageDialog(
-                            MessageResources.message("dialog.invalidFileName.text", localChangeList.getName()),
-                            MessageResources.message("dialog.invalidFileName.title"),
-                            null);
+                    failed.add(localChangeList.getName());
                 } catch (IOException ex) {
                     Messages.showMessageDialog(ex.toString(), MessageResources.message("dialog.exception.title"), null);
                 }
             }
+        }
+        
+        if (!failed.isEmpty()) {
+            StringBuilder failedChangeLists = new StringBuilder();
+            for (String filename : failed) {
+                failedChangeLists.append("  - " + filename).append("\n");
+            }
+            
+            Messages.showMessageDialog(
+                    MessageResources.message("dialog.couldNotSavePatches.text", saveLocation, failedChangeLists.toString()),
+                    MessageResources.message("dialog.couldNotSavePatches.title"),
+                    null);
+
         }
     }
 }
