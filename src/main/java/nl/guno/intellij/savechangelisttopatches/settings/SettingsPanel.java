@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Comparing;
@@ -33,7 +34,7 @@ public class SettingsPanel {
         directoryButton.addActionListener(e -> {
             String currentFileLocation = saveLocationField.getText();
 
-            final FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
+            final FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
             final VirtualFile toSelect = currentFileLocation == null ? null :
                     LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(currentFileLocation));
 
