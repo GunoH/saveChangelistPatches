@@ -8,18 +8,22 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.swing.event.HyperlinkEvent;
+
 import org.jetbrains.annotations.NotNull;
 
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diff.impl.patch.FilePatch;
 import com.intellij.openapi.diff.impl.patch.IdeaTextPatchBuilder;
 import com.intellij.openapi.diff.impl.patch.UnifiedDiffWriter;
+import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import nl.guno.intellij.savechangelisttopatches.settings.Settings;
+import nl.guno.intellij.savechangelisttopatches.settings.SettingsManager;
 
 public class SaveChangeListsToPatchesApplicationComponent implements ProjectComponent {
 
@@ -55,7 +59,11 @@ public class SaveChangeListsToPatchesApplicationComponent implements ProjectComp
         String saveLocation = Settings.getInstance(project).getSaveLocation();
         if ((saveLocation == null) || (saveLocation.length() < 1)) {
             new Notification(project, MessageResources.message("dialog.saveLocation.notSet.text"), MessageType.ERROR)
-                    .showBalloon().addToEventLog();
+                    .showBalloon(event -> {
+                        if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                            openSettings(project);
+                        }
+                    }).addToEventLog((notification, event) -> openSettings(project));
             return;
         }
         if (saveLocation.charAt(saveLocation.length() - 1) != '/') {
@@ -106,5 +114,9 @@ public class SaveChangeListsToPatchesApplicationComponent implements ProjectComp
                     null);
 
         }
+    }
+
+    private static void openSettings(Project project) {
+        ShowSettingsUtil.getInstance().editConfigurable(project, new SettingsManager(project));
     }
 }
