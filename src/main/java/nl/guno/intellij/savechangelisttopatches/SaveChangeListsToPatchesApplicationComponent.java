@@ -15,6 +15,7 @@ import com.intellij.openapi.diff.impl.patch.FilePatch;
 import com.intellij.openapi.diff.impl.patch.IdeaTextPatchBuilder;
 import com.intellij.openapi.diff.impl.patch.UnifiedDiffWriter;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
@@ -53,9 +54,8 @@ public class SaveChangeListsToPatchesApplicationComponent implements ProjectComp
     void savePatches() {
         String saveLocation = Settings.getInstance(project).getSaveLocation();
         if ((saveLocation == null) || (saveLocation.length() < 1)) {
-            Messages.showMessageDialog(
-                    MessageResources.message("dialog.saveLocation.notSet.text"),
-                    MessageResources.message("dialog.saveLocation.notSet.title"), null);
+            new Notification(project, MessageResources.message("dialog.saveLocation.notSet.text"), MessageType.ERROR)
+                    .showBalloon().addToEventLog();
             return;
         }
         if (saveLocation.charAt(saveLocation.length() - 1) != '/') {
@@ -89,7 +89,7 @@ public class SaveChangeListsToPatchesApplicationComponent implements ProjectComp
                 } catch (FileNotFoundException ex) {
                     failed.add(localChangeList.getName());
                 } catch (IOException ex) {
-                    Messages.showMessageDialog(ex.toString(), MessageResources.message("dialog.exception.title"), null);
+                    new Notification(project, ex.toString(), MessageType.ERROR).showBalloon().addToEventLog();
                 }
             }
         }

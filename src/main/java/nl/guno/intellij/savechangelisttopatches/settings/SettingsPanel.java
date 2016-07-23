@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -63,14 +63,13 @@ public class SettingsPanel {
                 || mySettings.getSaveOnClose() != saveOnCloseField.isSelected();
     }
 
-    void apply() {
+    void apply() throws ConfigurationException {
         final String saveLocation = saveLocationField.getText().trim();
 
         VirtualFile file = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(saveLocation));
         if (!isValid(file)) {
-            Messages.showMessageDialog(MessageResources.message("configuration.folderChooser.error.invalidDirectory.text"),
-                    MessageResources.message("configuration.folderChooser.error.invalidDirectory.title"), null);
-            return;
+            throw new ConfigurationException(
+                    MessageResources.message("configuration.folderChooser.error.invalidDirectory.text"));
         }
 
         mySettings.setSaveLocation(saveLocation);
