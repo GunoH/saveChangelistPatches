@@ -3,7 +3,7 @@
     <name>Save ChangeList Patches</name>
     <description>Saves each changelist as a patch in the location set in configuration.</description>
     <version>1.3.0</version>
-    <vendor>Guno Heitman</vendor>
+    <vendor>Ben Rose, Guno Heitman</vendor>
     <idea-version since-build="141"/>
     <change-notes><![CDATA[
         <ul>
