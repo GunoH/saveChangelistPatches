@@ -1,5 +1,5 @@
 <idea-plugin version="2">
-    <id>nl.guno.intellij.savechangelisttopatches</id>
+    <id>Save ChangeList Patches</id>
     <name>Save ChangeList Patches</name>
     <description>Saves each changelist as a patch in the location set in configuration.</description>
     <version>1.3.0</version>
