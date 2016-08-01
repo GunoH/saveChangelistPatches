@@ -9,7 +9,8 @@ public class SaveChangeListsToPatchesAction extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getData(CommonDataKeys.PROJECT);
-        ((SaveChangeListsToPatchesApplicationComponent)project
-                .getComponent("SaveChangeListsToPatchesApplicationComponent")).savePatches();
+
+        SaveChangeListsToPatchesTask task = new SaveChangeListsToPatchesTask(project);
+        task.queue();
     }
 }
