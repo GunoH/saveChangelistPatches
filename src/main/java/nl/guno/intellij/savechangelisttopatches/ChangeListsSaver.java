@@ -35,17 +35,14 @@ class ChangeListsSaver {
         this.project = project;
     }
 
-    void savePatches() {
+    /**
+     * @param showModalErrors Indicates if any errors should be shown in a modal dialogue.
+     */
+    void savePatches(boolean showModalErrors) {
 
         String saveLocation = Settings.getInstance(project).getSaveLocation();
         if ((saveLocation == null) || (saveLocation.length() < 1)) {
-            runInDispatchThread(
-                    () -> new Notification(project, MessageResources.message("dialog.saveLocation.notSet.text"), MessageType.ERROR)
-                            .showBalloon(event -> {
-                                if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                                    openSettings(project);
-                                }
-                            }).addToEventLog((notification, event) -> openSettings(project)));
+            logError(MessageResources.message("dialog.saveLocation.notSet.text"), "", showModalErrors);
             return;
         }
         if (saveLocation.charAt(saveLocation.length() - 1) != '/') {
@@ -85,7 +82,7 @@ class ChangeListsSaver {
         }
 
         if (!failed.isEmpty()) {
-            logFailure(saveLocation, failed);
+            logFailure(saveLocation, failed, showModalErrors);
         }
     }
 
@@ -93,16 +90,30 @@ class ChangeListsSaver {
         ShowSettingsUtil.getInstance().editConfigurable(project, new SettingsManager(project));
     }
 
-    private void logFailure(final String saveLocation, final Collection<String> failed) {
+    private void logFailure(final String saveLocation, final Collection<String> failed, boolean showModalErrors) {
         StringBuilder failedChangeLists = new StringBuilder();
         for (String filename : failed) {
             failedChangeLists.append("  - ").append(filename).append("\n");
         }
 
-        runInDispatchThread(() -> Messages.showMessageDialog(
+        logError(
                 MessageResources.message("dialog.couldNotSavePatches.text", saveLocation, failedChangeLists.toString()),
                 MessageResources.message("dialog.couldNotSavePatches.title"),
-                null));
+                showModalErrors);
+    }
+
+    private void logError(@NotNull String message, @NotNull String title, boolean showModalErrors) {
+        if (showModalErrors) {
+            runInDispatchThread(() -> Messages.showErrorDialog(message, title));
+        } else {
+            runInDispatchThread(
+                    () -> new Notification(project, message, MessageType.ERROR)
+                            .showBalloon(event -> {
+                                if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                                    openSettings(project);
+                                }
+                            }).addToEventLog((notification, event) -> openSettings(project)));
+        }
     }
 
     private void runInDispatchThread(@NotNull Runnable action) {

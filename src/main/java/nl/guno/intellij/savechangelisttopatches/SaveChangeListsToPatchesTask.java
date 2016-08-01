@@ -16,7 +16,7 @@ class SaveChangeListsToPatchesTask extends Task.Backgroundable {
 
     @Override
     public void run(@NotNull ProgressIndicator progressIndicator) {
-        new ChangeListsSaver(getProject()).savePatches();
+        new ChangeListsSaver(getProject()).savePatches(false);
     }
 
 

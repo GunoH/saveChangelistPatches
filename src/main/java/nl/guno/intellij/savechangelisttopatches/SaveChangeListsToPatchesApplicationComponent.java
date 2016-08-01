@@ -20,7 +20,7 @@ public class SaveChangeListsToPatchesApplicationComponent implements ProjectComp
     @Override
     public void projectClosed() {
         if (Settings.getInstance(project).getSaveOnClose()) {
-            new ChangeListsSaver(project).savePatches();
+            new ChangeListsSaver(project).savePatches(true);
         }
     }
 
