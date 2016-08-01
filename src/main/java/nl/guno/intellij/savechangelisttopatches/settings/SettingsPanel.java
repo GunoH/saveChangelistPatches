@@ -6,8 +6,6 @@ import java.io.File;
 
 import javax.swing.*;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -15,6 +13,7 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import nl.guno.intellij.savechangelisttopatches.MessageResources;
@@ -39,7 +38,7 @@ public class SettingsPanel {
                     LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(currentFileLocation));
 
             FileChooser.chooseFile(descriptor, project, toSelect, file -> {
-                if (isValid(file)) {
+                if (file != null && file.isDirectory() && file.isWritable()) {
                     saveLocationField.setText(FileUtil.toSystemDependentName(file.getPath()));
                 }
             });
@@ -67,17 +66,21 @@ public class SettingsPanel {
         final String saveLocation = saveLocationField.getText().trim();
 
         VirtualFile file = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(saveLocation));
-        if (!isValid(file)) {
+        if (file == null || !file.isDirectory()) {
             throw new ConfigurationException(
                     MessageResources.message("configuration.folderChooser.error.invalidDirectory.text"));
+        }
+        if (saveOnCloseField.isSelected() && StringUtil.isEmpty(saveLocation)) {
+            throw new ConfigurationException(
+                    MessageResources.message("configuration.folderChooser.error.directoryMandatory.text"));
+        }
+        if (!file.isWritable()) {
+            throw new ConfigurationException(
+                    MessageResources.message("configuration.folderChooser.error.directoryNotWritable.text"));
         }
 
         mySettings.setSaveLocation(saveLocation);
         mySettings.setSaveOnClose(saveOnCloseField.isSelected());
-    }
-
-    private boolean isValid(@Nullable VirtualFile file) {
-        return file != null && file.isDirectory() && file.isWritable();
     }
 
     JComponent getPanel() {
