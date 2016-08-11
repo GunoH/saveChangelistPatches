@@ -11,6 +11,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
@@ -22,15 +23,14 @@ public class SettingsPanel {
     private Settings mySettings;
 
     private JPanel rootComponent;
-    private JTextField saveLocationField;
+    private TextFieldWithBrowseButton saveLocationField;
     private JCheckBox saveOnCloseField;
-    private JButton directoryButton;
     private JLabel saveOnCloseLabel;
 
     SettingsPanel(Project project) {
         mySettings = Settings.getInstance(project);
         reset();
-        directoryButton.addActionListener(e -> {
+        saveLocationField.addActionListener(e -> {
             String currentFileLocation = saveLocationField.getText();
 
             final FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
