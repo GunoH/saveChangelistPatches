@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -23,6 +26,7 @@ import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
+import com.intellij.openapi.vcs.changes.shelf.ShelveChangesManager;
 import com.intellij.util.WaitForProgressToShow;
 import nl.guno.intellij.savechangelisttopatches.settings.Settings;
 import nl.guno.intellij.savechangelisttopatches.settings.SettingsManager;
@@ -68,8 +72,12 @@ class ChangeListsSaver {
                 patches = null;
             }
 
+            DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmmss");
+            String dateString = dateFormat.format(new Date());
+
             if (patches != null) {
-                File patchFile = new File(saveLocation + localChangeList.getName() + ".patch");
+                File patchFile = ShelveChangesManager.suggestPatchName(project, localChangeList.getName() + dateString,
+                        new File(saveLocation), null);
                 try (FileWriter writer = new FileWriter(patchFile.getPath())) {
                     UnifiedDiffWriter.write(project, patches, writer, "\n", null);
                     writer.flush();
