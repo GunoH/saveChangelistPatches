@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.event.HyperlinkEvent;
 
@@ -24,9 +25,11 @@ import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vcs.changes.shelf.ShelveChangesManager;
+import com.intellij.openapi.vcs.changes.shelf.ShelvedChangeList;
 import com.intellij.util.WaitForProgressToShow;
 import nl.guno.intellij.savechangelisttopatches.settings.Settings;
 import nl.guno.intellij.savechangelisttopatches.settings.SettingsManager;
@@ -58,40 +61,80 @@ class ChangeListsSaver {
         Collection<String> failed = new HashSet<>();
 
         for (LocalChangeList localChangeList : localChangeLists) {
-
-            if (localChangeList.getChanges().isEmpty()) {
-                // Don't create patches for empty change lists.
-                continue;
-            }
-
-            Collection<FilePatch> patches;
             try {
-                patches = IdeaTextPatchBuilder.buildPatch(project, localChangeList.getChanges(), project.getBaseDir().getPath(), false);
-            } catch (Exception ex) {
-                ex.printStackTrace(System.out);
-                patches = null;
+                savePatchForChangelist(localChangeList, saveLocation);
+            } catch (SaveFailedException e) {
+                failed.add(e.getName());
             }
+        }
+        
+        if (Settings.getInstance(project).getIncludeShelved()) {
 
-            DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmmss");
-            String dateString = dateFormat.format(new Date());
-
-            if (patches != null) {
-                File patchFile = ShelveChangesManager.suggestPatchName(project, localChangeList.getName() + dateString,
-                        new File(saveLocation), null);
-                try (FileWriter writer = new FileWriter(patchFile.getPath())) {
-                    UnifiedDiffWriter.write(project, patches, writer, "\n", null);
-                    writer.flush();
-                } catch (FileNotFoundException ex) {
-                    failed.add(localChangeList.getName());
-                } catch (IOException ex) {
-                    new Notification(project, ex.toString(), MessageType.ERROR).showBalloon().addToEventLog();
+            ShelveChangesManager shelveChangesManager = ShelveChangesManager.getInstance(project);
+            List<ShelvedChangeList> shelvedChangeLists = shelveChangesManager.getShelvedChangeLists();
+            for (ShelvedChangeList shelvedChangeList : shelvedChangeLists) {
+                try {
+                    savePatchForShelvedChangelist(shelvedChangeList, saveLocation);
+                } catch (SaveFailedException e) {
+                    failed.add(e.getName());
                 }
             }
         }
-
+        
         if (!failed.isEmpty()) {
             logFailure(saveLocation, failed, showModalErrors);
         }
+    }
+
+    private void savePatchForChangelist(LocalChangeList changeList, String saveLocation) throws SaveFailedException {
+        
+        if (changeList.getChanges().isEmpty()) {
+            // Don't create patches for empty change lists.
+            return;
+        }
+
+        savePatchForChange(changeList.getChanges(), saveLocation, changeList.getName());
+    }
+
+    private void savePatchForChange(Collection<Change> changes, String saveLocation, String name) 
+            throws SaveFailedException {
+        
+        Collection<FilePatch> patches;
+        try {
+            patches = IdeaTextPatchBuilder.buildPatch(project, changes, project.getBaseDir().getPath(), false);
+        } catch (Exception ex) {
+            ex.printStackTrace(System.out);
+            patches = null;
+        }
+
+        DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmmss");
+        String dateString = dateFormat.format(new Date());
+
+        if (patches != null) {
+            File patchFile = ShelveChangesManager.suggestPatchName(project, name + dateString,
+                    new File(saveLocation), null);
+            try (FileWriter writer = new FileWriter(patchFile.getPath())) {
+                UnifiedDiffWriter.write(project, patches, writer, "\n", null);
+                writer.flush();
+            } catch (FileNotFoundException ex) {
+                throw new SaveFailedException(name);
+            } catch (IOException ex) {
+                new Notification(project, ex.toString(), MessageType.ERROR).showBalloon().addToEventLog();
+            }
+        }
+    }
+
+    private void savePatchForShelvedChangelist(ShelvedChangeList changeList, String saveLocation) throws SaveFailedException {
+        
+        if (changeList.getChanges(project).isEmpty()) {
+            // Don't create patches for empty change lists.
+            return;
+        }
+
+        Collection<Change> changes = changeList.getChanges(project).stream().map(
+                change -> change.getChange(project)).collect(Collectors.toCollection(HashSet::new));
+
+        savePatchForChange(changes, saveLocation, "_shelf_" + changeList.getName());
     }
 
     private static void openSettings(Project project) {
@@ -134,4 +177,14 @@ class ChangeListsSaver {
         }
     }
 
+    private class SaveFailedException extends Throwable {
+        private String name;
+        SaveFailedException(String name) {
+            this.name = name;
+        }
+
+        String getName() {
+            return name;
+        }
+    }
 }

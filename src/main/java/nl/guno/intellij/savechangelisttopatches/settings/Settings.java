@@ -23,10 +23,12 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         State() {
             saveLocation = "";
             saveOnClose = false;
+            includeShelved = false;
         }
 
         public String saveLocation;
         public boolean saveOnClose;
+        public boolean includeShelved;
     }
 
     public static Settings getInstance(Project project) {
@@ -47,5 +49,13 @@ public class Settings implements PersistentStateComponent<Settings.State> {
 
     void setSaveOnClose(boolean saveOnClose) {
         myState.saveOnClose = saveOnClose;
+    }
+
+    public boolean getIncludeShelved() {
+        return myState.includeShelved;
+    }
+
+    void setIncludeShelved(boolean includeShelved) {
+        myState.includeShelved = includeShelved;
     }
 }

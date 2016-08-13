@@ -26,6 +26,8 @@ public class SettingsPanel {
     private TextFieldWithBrowseButton saveLocationField;
     private JCheckBox saveOnCloseField;
     private JLabel saveOnCloseLabel;
+    private JCheckBox includeShelvedField;
+    private JLabel includeShelvedLabel;
 
     SettingsPanel(Project project) {
         mySettings = Settings.getInstance(project);
@@ -50,16 +52,24 @@ public class SettingsPanel {
                 saveOnCloseField.doClick();
             }
         });
+        includeShelvedLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                includeShelvedField.doClick();
+            }
+        });
     }
 
     void reset() {
         saveLocationField.setText(mySettings.getSaveLocation());
         saveOnCloseField.setSelected(mySettings.getSaveOnClose());
+        includeShelvedField.setSelected(mySettings.getIncludeShelved());
     }
 
     boolean isModified() {
         return !Comparing.equal(mySettings.getSaveLocation(), saveLocationField.getText().trim())
-                || mySettings.getSaveOnClose() != saveOnCloseField.isSelected();
+                || mySettings.getSaveOnClose() != saveOnCloseField.isSelected()
+                || mySettings.getIncludeShelved() != includeShelvedField.isSelected();
     }
 
     void apply() throws ConfigurationException {
@@ -81,6 +91,7 @@ public class SettingsPanel {
 
         mySettings.setSaveLocation(saveLocation);
         mySettings.setSaveOnClose(saveOnCloseField.isSelected());
+        mySettings.setIncludeShelved(includeShelvedField.isSelected());
     }
 
     JComponent getPanel() {
