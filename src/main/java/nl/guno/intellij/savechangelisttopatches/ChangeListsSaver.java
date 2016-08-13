@@ -49,12 +49,21 @@ class ChangeListsSaver {
 
         String saveLocation = Settings.getInstance(project).getSaveLocation();
         if ((saveLocation == null) || (saveLocation.length() < 1)) {
-            logError(MessageResources.message("dialog.saveLocation.notSet.text"), "", showModalErrors);
+            logError(MessageResources.message("dialog.saveLocation.notSet.text"), 
+                    MessageResources.message("dialog.couldNotSavePatches.title"), showModalErrors);
             return;
         }
         if (saveLocation.charAt(saveLocation.length() - 1) != '/') {
             saveLocation = saveLocation + "/";
         }
+
+        File saveDir = new File(saveLocation);
+        if (!saveDir.exists() || !saveDir.canWrite()) {
+            logError(MessageResources.message("dialog.saveLocation.notValid.text", saveLocation),
+                    MessageResources.message("dialog.couldNotSavePatches.title"), showModalErrors);
+            return;
+        }
+        
         ChangeListManager changeListManager = ChangeListManager.getInstance(project);
         List<LocalChangeList> localChangeLists = changeListManager.getChangeLists();
 
