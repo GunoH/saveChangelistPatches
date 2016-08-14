@@ -69,14 +69,17 @@ class ChangeListsSaver {
 
         Collection<String> failed = new HashSet<>();
 
+        int count = 0;
         for (LocalChangeList localChangeList : localChangeLists) {
             try {
                 savePatchForChangelist(localChangeList, saveLocation);
+                count++;
             } catch (SaveFailedException e) {
                 failed.add(e.getName());
             }
         }
-        
+
+        int countShelved = 0;
         if (Settings.getInstance(project).getIncludeShelved()) {
 
             ShelveChangesManager shelveChangesManager = ShelveChangesManager.getInstance(project);
@@ -84,12 +87,17 @@ class ChangeListsSaver {
             for (ShelvedChangeList shelvedChangeList : shelvedChangeLists) {
                 try {
                     savePatchForShelvedChangelist(shelvedChangeList, saveLocation);
+                    countShelved++;
                 } catch (SaveFailedException e) {
                     failed.add(e.getName());
                 }
             }
         }
-        
+
+        if (count > 0 || countShelved > 0) {
+            logSaveSuccessful(count, countShelved, saveLocation, showModalErrors);
+        }
+
         if (!failed.isEmpty()) {
             logFailure(saveLocation, failed, showModalErrors);
         }
@@ -173,6 +181,24 @@ class ChangeListsSaver {
                                     openSettings(project);
                                 }
                             }).addToEventLog((notification, event) -> openSettings(project)));
+        }
+    }
+
+    private void logSaveSuccessful(int count, int countShelved, String saveLocation, boolean showModalErrors) {
+
+        // Never show this message as model dialog, since that would be lame.
+        if (!showModalErrors) {
+
+            String message;
+            if (Settings.getInstance(project).getIncludeShelved()) {
+                message = MessageResources.message(
+                        "dialog.patchesSaved.text.includingShelved", count, countShelved, saveLocation);
+            } else {
+                message = MessageResources.message(
+                        "dialog.patchesSaved.text", count, saveLocation);
+            }
+        runInDispatchThread(
+                () -> new Notification(project, message, MessageType.INFO).showBalloon().addToEventLog());
         }
     }
 
