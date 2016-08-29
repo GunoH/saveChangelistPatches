@@ -12,6 +12,8 @@ public class SearchableOptionContributor extends com.intellij.ide.ui.search.Sear
         final String displayName = MessageResources.message("configuration.key");
         processor.addOptions(MessageResources.message("configuration.saveLocation.label"), null, "SaveChangeListPatches options",
                 configurableId, displayName, true);
+        processor.addOptions(MessageResources.message("configuration.includeShelved.label"), null, "SaveChangeListPatches options",
+                configurableId, displayName, true);
         processor.addOptions(MessageResources.message("configuration.saveOnClose.label"), null, "SaveChangeListPatches options",
                 configurableId, displayName, true);
     }
