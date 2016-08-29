@@ -9,7 +9,6 @@ import com.intellij.openapi.project.Project;
 
 class SaveChangeListsToPatchesTask extends Task.Backgroundable {
 
-
     SaveChangeListsToPatchesTask(@Nullable Project project) {
         super(project, MessageResources.message("task.saveChangeListsToPatches.title"), false);
     }
@@ -18,7 +17,4 @@ class SaveChangeListsToPatchesTask extends Task.Backgroundable {
     public void run(@NotNull ProgressIndicator progressIndicator) {
         new ChangeListsSaver(getProject()).savePatches(false);
     }
-
-
-
 }
