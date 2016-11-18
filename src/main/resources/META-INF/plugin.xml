@@ -2,7 +2,6 @@
     <id>Save ChangeList Patches</id>
     <name>Save ChangeList Patches</name>
     <description>Saves each changelist as a patch in the location set in configuration.</description>
-    <version>1.4.0</version>
     <vendor>Ben Rose, Guno Heitman</vendor>
     <idea-version since-build="145"/>
     <change-notes><![CDATA[
