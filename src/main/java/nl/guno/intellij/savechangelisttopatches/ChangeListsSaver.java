@@ -186,16 +186,16 @@ class ChangeListsSaver {
 
     private void logSaveSuccessful(int count, int countShelved, String saveLocation, boolean showModalErrors) {
 
-        // Never show this message as model dialog, since that would be lame.
+        // Never show this message as modal dialog, since that would be lame.
         if (!showModalErrors) {
 
             String message;
             if (Settings.getInstance(project).getIncludeShelved()) {
                 message = MessageResources.message(
-                        "dialog.patchesSaved.text.includingShelved", count, countShelved, saveLocation);
+                        "dialog.patchesSaved.text.includingShelved", Integer.valueOf(count), Integer.valueOf(countShelved), saveLocation);
             } else {
                 message = MessageResources.message(
-                        "dialog.patchesSaved.text", count, saveLocation);
+                        "dialog.patchesSaved.text", Integer.valueOf(count), saveLocation);
             }
         runInDispatchThread(
                 () -> new Notification(project, message, MessageType.INFO).showBalloon().addToEventLog());
