@@ -24,11 +24,13 @@ public class Settings implements PersistentStateComponent<Settings.State> {
             saveLocation = "";
             saveOnClose = false;
             includeShelved = false;
+            useSubDirs = false;
         }
 
         public String saveLocation;
         public boolean saveOnClose;
         public boolean includeShelved;
+        public boolean useSubDirs;
     }
 
     public static Settings getInstance(Project project) {
@@ -57,5 +59,13 @@ public class Settings implements PersistentStateComponent<Settings.State> {
 
     void setIncludeShelved(boolean includeShelved) {
         myState.includeShelved = includeShelved;
+    }
+
+    public boolean getUseSubDirs() {
+        return myState.useSubDirs;
+    }
+
+    void setUseSubDirs(boolean useSubDirs) {
+        myState.useSubDirs = useSubDirs;
     }
 }

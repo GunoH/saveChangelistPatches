@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.swing.event.HyperlinkEvent;
 
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import com.intellij.openapi.application.Application;
@@ -47,21 +50,26 @@ class ChangeListsSaver {
      */
     void savePatches(boolean showModalErrors) {
 
-        String saveLocation = Settings.getInstance(project).getSaveLocation();
-        if ((saveLocation == null) || (saveLocation.length() < 1)) {
+        if (StringUtils.isEmpty(Settings.getInstance(project).getSaveLocation())) {
             logError(MessageResources.message("dialog.saveLocation.notSet.text"), 
                     MessageResources.message("dialog.couldNotSavePatches.title"), showModalErrors);
             return;
         }
-        if (saveLocation.charAt(saveLocation.length() - 1) != '/') {
-            saveLocation = saveLocation + "/";
-        }
 
-        File saveDir = new File(saveLocation);
-        if (!saveDir.exists() || !saveDir.canWrite()) {
-            logError(MessageResources.message("dialog.saveLocation.notValid.text", saveLocation),
+        Path savePath = Paths.get(Settings.getInstance(project).getSaveLocation());
+        if (!savePath.toFile().exists() || !savePath.toFile().canWrite()) {
+            logError(MessageResources.message("dialog.saveLocation.notValid.text", savePath.toString()),
                     MessageResources.message("dialog.couldNotSavePatches.title"), showModalErrors);
             return;
+        }
+
+        if (Settings.getInstance(project).getUseSubDirs()) {
+            savePath = savePath.resolve(Paths.get(currentDateAsString()));
+            if (!savePath.toFile().exists() && !savePath.toFile().mkdir()) {
+                logError(MessageResources.message("dialog.saveLocation.notValid.text", savePath.toString()),
+                        MessageResources.message("dialog.couldNotSavePatches.title"), showModalErrors);
+                return;
+            }
         }
         
         ChangeListManager changeListManager = ChangeListManager.getInstance(project);
@@ -72,7 +80,7 @@ class ChangeListsSaver {
         int count = 0;
         for (LocalChangeList localChangeList : localChangeLists) {
             try {
-                savePatchForChangelist(localChangeList, saveLocation);
+                savePatchForChangelist(localChangeList, savePath);
                 count++;
             } catch (SaveFailedException e) {
                 failed.add(e.getName());
@@ -86,7 +94,7 @@ class ChangeListsSaver {
             List<ShelvedChangeList> shelvedChangeLists = shelveChangesManager.getShelvedChangeLists();
             for (ShelvedChangeList shelvedChangeList : shelvedChangeLists) {
                 try {
-                    savePatchForShelvedChangelist(shelvedChangeList, saveLocation);
+                    savePatchForShelvedChangelist(shelvedChangeList, savePath);
                     countShelved++;
                 } catch (SaveFailedException e) {
                     failed.add(e.getName());
@@ -95,15 +103,15 @@ class ChangeListsSaver {
         }
 
         if (count > 0 || countShelved > 0) {
-            logSaveSuccessful(count, countShelved, saveLocation, showModalErrors);
+            logSaveSuccessful(count, countShelved, savePath, showModalErrors);
         }
 
         if (!failed.isEmpty()) {
-            logFailure(saveLocation, failed, showModalErrors);
+            logFailure(savePath, failed, showModalErrors);
         }
     }
 
-    private void savePatchForChangelist(LocalChangeList changeList, String saveLocation) throws SaveFailedException {
+    private void savePatchForChangelist(LocalChangeList changeList, Path saveLocation) throws SaveFailedException {
         
         if (changeList.getChanges().isEmpty()) {
             // Don't create patches for empty change lists.
@@ -113,7 +121,7 @@ class ChangeListsSaver {
         savePatchForChange(changeList.getChanges(), saveLocation, changeList.getName());
     }
 
-    private void savePatchForChange(Collection<Change> changes, String saveLocation, String name) 
+    private void savePatchForChange(Collection<Change> changes, Path saveLocation, String name)
             throws SaveFailedException {
         
         Collection<FilePatch> patches;
@@ -124,12 +132,15 @@ class ChangeListsSaver {
             patches = null;
         }
 
-        DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmmss");
-        String dateString = dateFormat.format(new Date());
+        String dateString = currentDateAsString();
 
         if (patches != null) {
-            File patchFile = ShelveChangesManager.suggestPatchName(project, name + dateString,
-                    new File(saveLocation), null);
+            String filename = name;
+            if (!Settings.getInstance(project).getUseSubDirs()) {
+                filename = filename + "_" + dateString;
+            }
+            File patchFile = ShelveChangesManager.suggestPatchName(project, filename,
+                    saveLocation.toFile(), null);
             try (FileWriter writer = new FileWriter(patchFile.getPath())) {
                 UnifiedDiffWriter.write(project, patches, writer, "\n", null);
                 writer.flush();
@@ -141,7 +152,13 @@ class ChangeListsSaver {
         }
     }
 
-    private void savePatchForShelvedChangelist(ShelvedChangeList changeList, String saveLocation) throws SaveFailedException {
+    @NotNull
+    private String currentDateAsString() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        return dateFormat.format(new Date());
+    }
+
+    private void savePatchForShelvedChangelist(ShelvedChangeList changeList, Path saveLocation) throws SaveFailedException {
         
         if (changeList.getChanges(project).isEmpty()) {
             // Don't create patches for empty change lists.
@@ -158,7 +175,7 @@ class ChangeListsSaver {
         ShowSettingsUtil.getInstance().editConfigurable(project, new SettingsManager(project));
     }
 
-    private void logFailure(final String saveLocation, final Collection<String> failed, boolean showModalErrors) {
+    private void logFailure(final Path saveLocation, final Collection<String> failed, boolean showModalErrors) {
         StringBuilder failedChangeLists = new StringBuilder();
         for (String filename : failed) {
             failedChangeLists.append("  - ").append(filename).append("\n");
@@ -184,7 +201,7 @@ class ChangeListsSaver {
         }
     }
 
-    private void logSaveSuccessful(int count, int countShelved, String saveLocation, boolean showModalErrors) {
+    private void logSaveSuccessful(int count, int countShelved, Path saveLocation, boolean showModalErrors) {
 
         // Never show this message as modal dialog, since that would be lame.
         if (!showModalErrors) {
