@@ -6,7 +6,8 @@
     <idea-version since-build="145"/>
     <change-notes><![CDATA[
         <ul>
-            <li>v1.4.0: Added option to also save shelved changelists and various other minor changes.</li>
+            <li>v1.5.0: Change lists can now be saved in a separate directory for each save.</li>
+            <li>v1.4.0: Added option to also save shelved change lists and various other minor changes.</li>
             <li>v1.3.0: IntelliJ 2016.x compatibility.</li>
         </ul>
     ]]>

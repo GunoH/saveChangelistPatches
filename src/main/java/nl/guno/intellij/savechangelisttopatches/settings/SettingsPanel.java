@@ -28,6 +28,8 @@ public class SettingsPanel {
     private JLabel saveOnCloseLabel;
     private JCheckBox includeShelvedField;
     private JLabel includeShelvedLabel;
+    private JCheckBox useSubDirsField;
+    private JLabel useSubDirsLabel;
 
     SettingsPanel(Project project) {
         mySettings = Settings.getInstance(project);
@@ -36,8 +38,7 @@ public class SettingsPanel {
             String currentFileLocation = saveLocationField.getText();
 
             final FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
-            final VirtualFile toSelect = currentFileLocation == null ? null :
-                    LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(currentFileLocation));
+            final VirtualFile toSelect = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(currentFileLocation));
 
             FileChooser.chooseFile(descriptor, project, toSelect, file -> {
                 if (file != null && file.isDirectory() && file.isWritable()) {
@@ -58,18 +59,26 @@ public class SettingsPanel {
                 includeShelvedField.doClick();
             }
         });
+        useSubDirsLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                useSubDirsField.doClick();
+            }
+        });
     }
 
     void reset() {
         saveLocationField.setText(mySettings.getSaveLocation());
         saveOnCloseField.setSelected(mySettings.getSaveOnClose());
         includeShelvedField.setSelected(mySettings.getIncludeShelved());
+        useSubDirsField.setSelected(mySettings.getUseSubDirs());
     }
 
     boolean isModified() {
         return !Comparing.equal(mySettings.getSaveLocation(), saveLocationField.getText().trim())
                 || mySettings.getSaveOnClose() != saveOnCloseField.isSelected()
-                || mySettings.getIncludeShelved() != includeShelvedField.isSelected();
+                || mySettings.getIncludeShelved() != includeShelvedField.isSelected()
+                || mySettings.getUseSubDirs() != useSubDirsField.isSelected();
     }
 
     void apply() throws ConfigurationException {
@@ -92,6 +101,7 @@ public class SettingsPanel {
         mySettings.setSaveLocation(saveLocation);
         mySettings.setSaveOnClose(saveOnCloseField.isSelected());
         mySettings.setIncludeShelved(includeShelvedField.isSelected());
+        mySettings.setUseSubDirs(useSubDirsField.isSelected());
     }
 
     JComponent getPanel() {
