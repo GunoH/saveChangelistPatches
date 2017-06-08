@@ -80,8 +80,9 @@ class ChangeListsSaver {
         int count = 0;
         for (LocalChangeList localChangeList : localChangeLists) {
             try {
-                savePatchForChangelist(localChangeList, savePath);
-                count++;
+                if (savePatchForChangelist(localChangeList, savePath)) {
+                    count++;
+                }
             } catch (SaveFailedException e) {
                 failed.add(e.getName());
             }
@@ -94,8 +95,9 @@ class ChangeListsSaver {
             List<ShelvedChangeList> shelvedChangeLists = shelveChangesManager.getShelvedChangeLists();
             for (ShelvedChangeList shelvedChangeList : shelvedChangeLists) {
                 try {
-                    savePatchForShelvedChangelist(shelvedChangeList, savePath);
-                    countShelved++;
+                    if (savePatchForShelvedChangelist(shelvedChangeList, savePath)) {
+                        countShelved++;
+                    }
                 } catch (SaveFailedException e) {
                     failed.add(e.getName());
                 }
@@ -111,17 +113,19 @@ class ChangeListsSaver {
         }
     }
 
-    private void savePatchForChangelist(LocalChangeList changeList, Path saveLocation) throws SaveFailedException {
+    /** @return {@code true} if a patch was created, {@code false} otherwise. */
+    private boolean savePatchForChangelist(LocalChangeList changeList, Path saveLocation) throws SaveFailedException {
         
         if (changeList.getChanges().isEmpty()) {
             // Don't create patches for empty change lists.
-            return;
+            return false;
         }
 
-        savePatchForChange(changeList.getChanges(), saveLocation, changeList.getName());
+        return savePatchForChange(changeList.getChanges(), saveLocation, changeList.getName());
     }
 
-    private void savePatchForChange(Collection<Change> changes, Path saveLocation, String name)
+    /** @return {@code true} if a patch was created, {@code false} otherwise. */
+    private boolean savePatchForChange(Collection<Change> changes, Path saveLocation, String name)
             throws SaveFailedException {
         
         Collection<FilePatch> patches;
@@ -129,27 +133,25 @@ class ChangeListsSaver {
             patches = IdeaTextPatchBuilder.buildPatch(project, changes, project.getBaseDir().getPath(), false);
         } catch (Exception ex) {
             ex.printStackTrace(System.out);
-            patches = null;
+            return false;
         }
 
-        String dateString = currentDateAsString();
-
-        if (patches != null) {
-            String filename = name;
-            if (!Settings.getInstance(project).getUseSubDirs()) {
-                filename = filename + "_" + dateString;
-            }
-            File patchFile = ShelveChangesManager.suggestPatchName(project, filename,
-                    saveLocation.toFile(), null);
-            try (FileWriter writer = new FileWriter(patchFile.getPath())) {
-                UnifiedDiffWriter.write(project, patches, writer, "\n", null);
-                writer.flush();
-            } catch (FileNotFoundException ex) {
-                throw new SaveFailedException(name);
-            } catch (IOException ex) {
-                new Notification(project, ex.toString(), MessageType.ERROR).showBalloon().addToEventLog();
-            }
+        String filename = name;
+        if (!Settings.getInstance(project).getUseSubDirs()) {
+            filename = filename + "_" + currentDateAsString();
         }
+        File patchFile = ShelveChangesManager.suggestPatchName(project, filename,
+                saveLocation.toFile(), null);
+        try (FileWriter writer = new FileWriter(patchFile.getPath())) {
+            UnifiedDiffWriter.write(project, patches, writer, "\n", null);
+            writer.flush();
+        } catch (FileNotFoundException ex) {
+            throw new SaveFailedException(name);
+        } catch (IOException ex) {
+            new Notification(project, ex.toString(), MessageType.ERROR).showBalloon().addToEventLog();
+        }
+
+        return true;
     }
 
     @NotNull
@@ -158,17 +160,18 @@ class ChangeListsSaver {
         return dateFormat.format(new Date());
     }
 
-    private void savePatchForShelvedChangelist(ShelvedChangeList changeList, Path saveLocation) throws SaveFailedException {
+    /** @return {@code true} if a patch was created, {@code false} otherwise. */
+    private boolean savePatchForShelvedChangelist(ShelvedChangeList changeList, Path saveLocation) throws SaveFailedException {
         
         if (changeList.getChanges(project).isEmpty()) {
             // Don't create patches for empty change lists.
-            return;
+            return false;
         }
 
         Collection<Change> changes = changeList.getChanges(project).stream().map(
                 change -> change.getChange(project)).collect(Collectors.toCollection(HashSet::new));
 
-        savePatchForChange(changes, saveLocation, "_shelf_" + changeList.getName());
+        return savePatchForChange(changes, saveLocation, "_shelf_" + changeList.getName());
     }
 
     private static void openSettings(Project project) {
