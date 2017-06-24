@@ -202,16 +202,16 @@ internal class ChangeListsSaver(private val project: Project) {
 
     private fun logSaveSuccessful(count: Int, countShelved: Int, saveLocation: Path, showModalErrors: Boolean) {
 
-        // Never show this message as model dialog, since that would be lame.
+        // Never show this message as modal dialog, since that would be lame.
         if (!showModalErrors) {
 
             val message: String
             if (Settings.getInstance(project).includeShelved) {
                 message = MessageResources.message(
-                        "dialog.patchesSaved.text.includingShelved", count, countShelved, saveLocation)
+                        "dialog.patchesSaved.text.includingShelved", Integer.valueOf(count), Integer.valueOf(countShelved), saveLocation)
             } else {
                 message = MessageResources.message(
-                        "dialog.patchesSaved.text", count, saveLocation)
+                        "dialog.patchesSaved.text", Integer.valueOf(count), saveLocation)
             }
             runInDispatchThread(
                     Runnable { Notification(project, message, MessageType.INFO).showBalloon().addToEventLog() })
