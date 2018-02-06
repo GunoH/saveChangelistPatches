@@ -195,7 +195,7 @@ internal class ChangeListsSaver(private val project: Project) {
                                     if (event.eventType == HyperlinkEvent.EventType.ACTIVATED) {
                                         openSettings(project)
                                     }
-                                }).addToEventLog(NotificationListener { notification, event -> openSettings(project) })
+                                }).addToEventLog(NotificationListener { _, _ -> openSettings(project) })
                     })
         }
     }
@@ -205,12 +205,11 @@ internal class ChangeListsSaver(private val project: Project) {
         // Never show this message as modal dialog, since that would be lame.
         if (!showModalErrors) {
 
-            val message: String
-            if (Settings.getInstance(project).includeShelved) {
-                message = MessageResources.message(
+            val message: String = if (Settings.getInstance(project).includeShelved) {
+                MessageResources.message(
                         "dialog.patchesSaved.text.includingShelved", Integer.valueOf(count), Integer.valueOf(countShelved), saveLocation)
             } else {
-                message = MessageResources.message(
+                MessageResources.message(
                         "dialog.patchesSaved.text", Integer.valueOf(count), saveLocation)
             }
             runInDispatchThread(
