@@ -1,19 +1,19 @@
 buildscript {
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.30")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${BuildConfig.kotlinVersion}")
     }
 }
 
 plugins {
-    kotlin("jvm") version "1.2.30"
-    id("org.jetbrains.intellij") version "0.3.1"
+    kotlin("jvm") version BuildConfig.kotlinVersion
+    id("org.jetbrains.intellij") version BuildConfig.gradleIntellijPluginVersion 
 }
 
 intellij {
     pluginName = "SaveChangeListPatches"
-    version = "IC-2016.1"
+    version = BuildConfig.intellijVersion
     updateSinceUntilBuild = false
 }
 
 group = "nl.guno"
-version = "1.5.0pre"
+version = BuildConfig.pluginVersion
